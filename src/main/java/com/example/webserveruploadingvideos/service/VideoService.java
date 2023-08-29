@@ -1,14 +1,17 @@
 package com.example.webserveruploadingvideos.service;
 
+import com.example.webserveruploadingvideos.dto.VideoAdminDTO;
 import com.example.webserveruploadingvideos.dto.VideoDTO;
+import com.example.webserveruploadingvideos.enums.Role;
+import com.example.webserveruploadingvideos.enums.StatusVideo;
 import com.example.webserveruploadingvideos.exception.ItNotFoundException;
-import com.example.webserveruploadingvideos.model.StatusVideo;
 import com.example.webserveruploadingvideos.model.UserInfo;
 import com.example.webserveruploadingvideos.model.Video;
 import com.example.webserveruploadingvideos.repozitory.UserRepository;
 import com.example.webserveruploadingvideos.repozitory.VideoRepository;
 import jakarta.transaction.Transactional;
 import jakarta.xml.bind.DatatypeConverter;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -82,6 +85,7 @@ public class VideoService {
             if (!(videoRepository.existsById(videoHash))) { // если видео нет в БД
 
                 video.setStartTime(startTime);
+                video.setStatus(StatusVideo.VIDEO_BEING_UPLOADED);
 
                 userRepository.save(user);
                 videoRepository.save(video);
@@ -146,6 +150,7 @@ public class VideoService {
         Video video = videoRepository.findById(videoHash).orElse(null);
         if (video != null) {
             video.setEndTime(endTime);
+            video.setStatus(StatusVideo.VIDEO_UPLOADED);
             videoRepository.save(video);
         }
     }
@@ -160,7 +165,32 @@ public class VideoService {
     }
 
     // информация о видео
-    public Video downloadVideo(String videoHash) {
-        return videoRepository.findById(videoHash).orElseThrow(ItNotFoundException::new);
+    public Video downloadVideo(String videoHash, Authentication authentication) {
+        UserInfo user = userRepository.findById(authentication.getName())
+                .orElseThrow(ItNotFoundException::new);
+
+        Video video = user.getDownloadableVideo().stream()
+                .filter(video1 -> video1.getVideoHash().equals(videoHash))
+                .findFirst().orElseThrow(ItNotFoundException::new);
+        return video;
+    }
+
+    // Метод для отправки данных о текущих загрузках на клиентскую сторону
+    @Scheduled(fixedDelay = 1000) // Регулярное выполнение каждую секунду
+    public List<VideoAdminDTO> sendUploadToAdmin(Authentication authentication) {
+
+        UserInfo user = userRepository.findById(authentication.getName())
+                .orElseThrow(ItNotFoundException::new);
+
+        if (user.getRole().equals(Role.ADMIN)) {
+
+            List<Video> currentUploads = videoRepository.findAllByStatus(StatusVideo.VIDEO_BEING_UPLOADED);
+
+            return currentUploads.stream()
+                    .map(VideoAdminDTO::from)
+                    .collect(Collectors.toList());
+        } else {
+            throw new ItNotFoundException();
+        }
     }
 }

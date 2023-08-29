@@ -55,9 +55,10 @@ public class UserController {
 
     // скачать видео
     @GetMapping("/download/{id}")
-    public ResponseEntity<Resource> downloadVideo(@PathVariable String videoHash) {
+    public ResponseEntity<Resource> downloadVideo(@PathVariable String videoHash,
+                                                  Authentication authentication) {
 
-        Video video = videoService.downloadVideo(videoHash);
+        Video video = videoService.downloadVideo(videoHash, authentication);
 
         try {
         Path path = Paths.get("D:\\TestVideo\\" + videoHash);

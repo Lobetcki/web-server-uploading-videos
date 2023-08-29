@@ -1,5 +1,5 @@
 databaseChangeLog:
   - include:
-      file: liquibase/scripts/Video.sql
-  - include:
       file: liquibase/scripts/UserInfo.sql
+  - include:
+      file: liquibase/scripts/Video.sql

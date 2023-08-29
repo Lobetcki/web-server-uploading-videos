@@ -1,8 +1,7 @@
 package com.example.webserveruploadingvideos.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import com.example.webserveruploadingvideos.enums.Role;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +14,9 @@ public class UserInfo {
 
     @Id
     private String userName;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     @ManyToMany
     private List<Video> downloadableVideo;

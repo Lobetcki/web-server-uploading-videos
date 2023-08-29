@@ -1,6 +1,6 @@
 -- liquibase formatted sql
 
--- changeset anton:1
+-- changeset anton:2
 create table Video
 (
     video_hash     varchar(255) NOT NULL,
@@ -9,8 +9,8 @@ create table Video
     endTime        date,
     status         varchar(255),
 
-    video_hash     varchar(255) NOT NULL,
-    primary key (video_hash)
+    user_name     varchar(255) NOT NULL,
+    primary key (video_hash),
     foreign key (user_name) references UserInfo(user_name)
 );
 

@@ -1,4 +1,4 @@
-package com.example.webserveruploadingvideos.model;
+package com.example.webserveruploadingvideos.enums;
 
 public enum StatusVideo {
 

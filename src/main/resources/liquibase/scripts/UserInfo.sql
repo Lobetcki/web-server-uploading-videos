@@ -1,13 +1,13 @@
 -- liquibase formatted sql
 
--- changeset anton:2
+-- changeset anton:1
 create table UserInfo
 (
     user_name     varchar(255) NOT NULL,
+    role          varchar(250),
 
-    downloadable_video varchar(255) NOT NULL
-,
-    primary key (userName),
+    video_hash    varchar(255),
+    primary key (user_name),
 
-    foreign key (Video) references Video(video_hash)
+    foreign key (video_hash) references video(video_hash)
 );

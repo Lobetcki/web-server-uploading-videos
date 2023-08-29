@@ -1,39 +1,31 @@
 package com.example.webserveruploadingvideos.controller;
 
+import com.example.webserveruploadingvideos.dto.VideoAdminDTO;
 import com.example.webserveruploadingvideos.service.VideoService;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
 
-    private VideoService videoService;
+    private final VideoService videoService;
+
+    public AdminController(VideoService videoService) {
+        this.videoService = videoService;
+    }
 
     @GetMapping("/admin/dashboard")
-    public String adminDashboard(Model model) {
-//        List<Video> currentUploads = videoService.getCurrentUploads();
-//        model.addAttribute("uploads", currentUploads);
-        return "admin-dashboard"; // Thymeleaf шаблон для отображения дашборда администратора
+    public List<VideoAdminDTO> adminDashboard(Authentication authentication) {
+        List<VideoAdminDTO> currentUploads = videoService.sendUploadToAdmin(authentication);
+
+        return currentUploads;
     }
 
-    // Метод для отправки данных о текущих загрузках на клиентскую сторону
-    @Scheduled(fixedDelay = 1000) // Регулярное выполнение каждую секунду (или другой интервал)
-    public void sendUploadProgressToAdmin() {
-//        List<Video> currentUploads = videoService.getCurrentUploads();
-
-//        for (Video upload : currentUploads) {
-//            String login = upload.getUser().getLogin();
-//            String videoName = upload.getVideo().getName();
-//            int progress = upload.getProgress();
-//
-//            messagingTemplate.convertAndSend("/topic/admin-progress/" + login,
-//                    new UploadProgress(login, videoName, progress));
-//        }
-    }
 }
 
 

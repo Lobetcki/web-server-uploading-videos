@@ -1,8 +1,7 @@
 package com.example.webserveruploadingvideos.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import com.example.webserveruploadingvideos.enums.StatusVideo;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,6 +18,7 @@ public class Video {
     private String nameVideo;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    @Enumerated(EnumType.STRING)
     private StatusVideo status;
 
     @ManyToMany
