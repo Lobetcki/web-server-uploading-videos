@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
-      file: liquibase/scripts/cell.sql
+      file: liquibase/scripts/DownloadableVideo.sql
+  - include:
+      file: liquibase/scripts/UserUploadingVideo.sql
