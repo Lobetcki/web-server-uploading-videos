@@ -1,7 +1,6 @@
 package com.example.webserveruploadingvideos.controller;
 
 import com.example.webserveruploadingvideos.service.VideoService;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-
-    private SimpMessagingTemplate messagingTemplate;
 
     private VideoService videoService;
 

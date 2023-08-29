@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 
 @ControllerAdvice
-public class NotFoundPasteController {
+public class NotFoundController {
     @ExceptionHandler(ItNotFoundException.class)
     public ResponseEntity<?> notFound() {
         return ResponseEntity.status(404).body("Not Found");
@@ -17,7 +17,7 @@ public class NotFoundPasteController {
 
     @ExceptionHandler(InvalidParametersExeption.class)
     public ResponseEntity<?> invalidParam() {
-        return ResponseEntity.status(400).body("Bed request");
+        return ResponseEntity.status(400).body("Error download");
     }
 
     @ExceptionHandler(UnauthorizedExeption.class)

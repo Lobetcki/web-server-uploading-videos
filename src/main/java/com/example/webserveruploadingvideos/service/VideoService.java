@@ -1,6 +1,8 @@
 package com.example.webserveruploadingvideos.service;
 
+import com.example.webserveruploadingvideos.dto.VideoDTO;
 import com.example.webserveruploadingvideos.exception.ItNotFoundException;
+import com.example.webserveruploadingvideos.model.StatusVideo;
 import com.example.webserveruploadingvideos.model.UserInfo;
 import com.example.webserveruploadingvideos.model.Video;
 import com.example.webserveruploadingvideos.repozitory.UserRepository;
@@ -15,10 +17,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Map;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,9 +33,6 @@ public class VideoService {
     private final VideoRepository videoRepository;
     private final UserRepository userRepository;
 
-//    @Value("${telematika.security.token-expired}")
-//    private Integer expiredSec;
-
     public VideoService(VideoRepository videoRepository, UserRepository userRepository) {
         this.videoRepository = videoRepository;
         this.userRepository = userRepository;
@@ -37,8 +40,7 @@ public class VideoService {
 
     // авторизация
     public String authority(String userName) {
-        UserInfo user = new UserInfo();
-        user.setUserName(userName);
+
         userRepository.existsById(userName);
 
         Authentication authentication = new UsernamePasswordAuthenticationToken(userName, null);
@@ -47,32 +49,63 @@ public class VideoService {
         return userName;
     }
 
-    // сохраняем в базу данных информации о видео если токого нет в бвзе данных
+    // Созраняем видео на жесткий диск и сохраняем в базу данных информации о видео
     @Transactional
-    public boolean uploadVideo(String videoHash, String videoName,
-                               LocalDateTime startTime, Authentication authentication) {
+    public String uploadVideo(MultipartFile file,
+                               Authentication authentication
+                               ) {
+        // Генерируем хэш файла
+        String videoHash = generateVideoHash(file);
 
-        UserInfo user = userRepository.findById(authentication.getName()).orElseThrow();
+        UserInfo user = userRepository.findById(authentication.getName())
+                .orElseThrow(ItNotFoundException::new);
 
-        if (user != null) {
+        // проверяем количество загружаемых видео
+        List<Video> videosUploaded = user.getDownloadableVideo().stream()
+                .filter(video -> video.getStatus().equals(StatusVideo.VIDEO_BEING_UPLOADED))
+                .toList();
+
+        if (videosUploaded.size() > 2) {
+            return "Вы уже загружаете максимальное количество видео.";
+        }
+
+        if (isVideoFile(file)) { // проверка я вляется файлом или нет
+            // старт загрузки
+            LocalDateTime startTime = LocalDateTime.now();
+
             Video video = new Video();
             video.setVideoHash(videoHash);
-            video.setNameVideo(videoName);
+            video.setNameVideo(file.getOriginalFilename());
             video.getUser().add(user);
             user.getDownloadableVideo().add(video);
 
-            if (videoRepository.existsById(videoHash)) {
-                userRepository.save(user);
-                videoRepository.save(video);
-                return false;
-            } else {
+            if (!(videoRepository.existsById(videoHash))) { // если видео нет в БД
+
                 video.setStartTime(startTime);
+
                 userRepository.save(user);
                 videoRepository.save(video);
-                return true;
+
+                try {
+                    // Сохраняем файл на диск
+                    Path uploadPath = Paths.get("D:\\TestVideo");
+                    Path filePath = uploadPath.resolve(videoHash);
+                    Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+                    endUploadVideo(videoHash, LocalDateTime.now());
+
+                    return "Видео успешно загружено!";
+
+                } catch (IOException e) {
+                    return "Ошибка при сохранении файла: " + e.getMessage();
+                }
+            } else {
+                userRepository.save(user);
+                videoRepository.save(video);
+                return "Видео успешно загружено!";
             }
         } else {
-            return false;
+            return "Выбранный файл не является видео!";
         }
     }
 
@@ -118,14 +151,12 @@ public class VideoService {
     }
 
     // Страница со списком всех видео
-    public Map<String, String> getAllVideoUsers(Authentication authentication) {
+    public List<VideoDTO> getAllVideoUsers(Authentication authentication) {
         UserInfo user = userRepository.findById(authentication.getName()).orElseThrow(ItNotFoundException::new);
         return user.getDownloadableVideo()
                 .stream()
-                .collect(Collectors.toMap(
-                        Video::getVideoHash,
-                        Video::getNameVideo
-                        ));
+                .map(VideoDTO::from)
+                .collect(Collectors.toList());
     }
 
     // информация о видео

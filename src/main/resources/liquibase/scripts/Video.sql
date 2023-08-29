@@ -7,7 +7,7 @@ create table Video
     name_video     varchar(255) NOT NULL,
     start_time     date,
     endTime        date,
-    progress       int,
+    status         varchar(255),
 
     video_hash     varchar(255) NOT NULL,
     primary key (video_hash)

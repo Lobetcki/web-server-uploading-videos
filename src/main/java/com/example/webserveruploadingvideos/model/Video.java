@@ -19,7 +19,7 @@ public class Video {
     private String nameVideo;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private Integer progress;
+    private StatusVideo status;
 
     @ManyToMany
     private List<UserInfo> user;
