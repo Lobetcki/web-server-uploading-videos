@@ -1,16 +1,16 @@
 package com.example.webserveruploadingvideos.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
@@ -24,26 +24,33 @@ import javax.sql.DataSource;
 @Configuration
 public class SecurityConfig {
 
-    @Qualifier("securityUserDetailsService")
+//    @Qualifier("securityUserDetailsService")
     @Autowired
-    private SecurityUserDetailsService service;
+    private UserDetailsService userDetailsService;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return NoOpPasswordEncoder.getInstance();
     }
-    @Autowired
-    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(service).passwordEncoder(passwordEncoder());
 
+    @Bean
+    // Создаем экземпляр DaoAuthenticationProvider
+    // для работы с аутентификацией через базу данных
+    public DaoAuthenticationProvider authProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        // Устанавливаем наш созданный экземпляр PasswordEncoder
+        // для возможности использовать его при аутентификации
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
     }
+
 
     // Создаем бин userDetailsManager.
     // Он использует JdbcUserDetailsManager для работы с базой данных
     @Bean
     public UserDetailsManager userDetailsManager(DataSource dataSource,
                                                  AuthenticationManager authenticationManager) {
-
         // Инициализируем JdbcUserDetailsManager с dataSource и authenticationManager для работы с базой данных
         JdbcUserDetailsManager jdbcUserDetailsManager = new JdbcUserDetailsManager(dataSource);
         jdbcUserDetailsManager.setAuthenticationManager(authenticationManager);

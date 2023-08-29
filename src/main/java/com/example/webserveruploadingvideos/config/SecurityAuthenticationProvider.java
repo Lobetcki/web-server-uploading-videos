@@ -1,6 +1,5 @@
 package com.example.webserveruploadingvideos.config;
 
-import com.example.webserveruploadingvideos.repozitory.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -17,8 +16,6 @@ public class SecurityAuthenticationProvider implements AuthenticationProvider {
     @Qualifier("securityUserDetailsService")
     @Autowired
     private UserDetailsService userDetailsService;
-
-    private UserRepository userRepository;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
