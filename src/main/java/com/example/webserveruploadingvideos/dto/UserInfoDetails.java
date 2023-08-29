@@ -3,11 +3,9 @@ package com.example.webserveruploadingvideos.dto;
 import com.example.webserveruploadingvideos.model.UserInfo;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.List;
 
 @Data
 public class UserInfoDetails implements UserDetails {
@@ -22,8 +20,8 @@ public class UserInfoDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(userInfo.getRole().name()));
-//        return null;
+//        return List.of(new SimpleGrantedAuthority(userInfo.getRole().name()));
+        return null;
     }
 
     @Override
