@@ -1,7 +1,7 @@
 -- liquibase formatted sql
 
 -- changeset anton:1
-create table UserInfo
+create table user_info
 (
     user_name     varchar(255) NOT NULL,
     role          varchar(250),

@@ -73,8 +73,6 @@ public class VideoService {
             return "Вы уже загружаете максимальное количество видео.";
         }
 
-
-
         if (isVideoFile(file)) { // проверка я вляется файлом или нет
 
             Video video = videoRepository.findById(videoHash).orElse(null);
@@ -86,9 +84,7 @@ public class VideoService {
                 Video videoNew = new Video();
                 videoNew.setVideoHash(videoHash);
                 videoNew.setNameVideo(file.getOriginalFilename());
-//            List<UserInfo> userInfoList = video.getUser();
-//                    userInfoList.add(user);
-//            video.setUser(userInfoList);
+
                 videoNew.setStartTime(startTime);
                 videoNew.setStatus(StatusVideo.VIDEO_BEING_UPLOADED);
 
@@ -201,7 +197,8 @@ public class VideoService {
                 .orElseThrow(ItNotFoundException::new);
 
         if (user.getRole().equals(Role.ADMIN)) {
-            List<Video> currentUploads = videoRepository.findAllByStatus(StatusVideo.VIDEO_BEING_UPLOADED);
+            List<Video> currentUploads = videoRepository
+                    .findAllByStatus(StatusVideo.VIDEO_BEING_UPLOADED);
 
             return currentUploads.stream()
                     .map(VideoAdminDTO::from)

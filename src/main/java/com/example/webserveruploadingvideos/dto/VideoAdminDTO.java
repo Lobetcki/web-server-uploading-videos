@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 public class VideoAdminDTO {
@@ -14,7 +15,7 @@ public class VideoAdminDTO {
     private String nameVideo;
     private LocalDateTime startTime;
 
-    private List<UserInfo> user;
+    private List<String> user;
 
     public static VideoAdminDTO from(Video video) {
         VideoAdminDTO videoAdminDTO = new VideoAdminDTO();
@@ -22,7 +23,9 @@ public class VideoAdminDTO {
         videoAdminDTO.setVideoHash(video.getVideoHash());
         videoAdminDTO.setNameVideo(video.getNameVideo());
         videoAdminDTO.setStartTime(video.getStartTime());
-        videoAdminDTO.setUser(video.getUser());
+        videoAdminDTO.setUser(video.getUser().stream()
+                .map(UserInfo::getUserName)
+                .collect(Collectors.toList()));
 
         return videoAdminDTO;
     }

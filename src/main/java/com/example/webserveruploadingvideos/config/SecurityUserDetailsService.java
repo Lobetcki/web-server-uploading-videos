@@ -22,12 +22,5 @@ public class SecurityUserDetailsService implements UserDetailsService {
         UserInfo userInfo = userRepository.findById(username).orElseThrow(ItNotFoundException::new);
 
         return new UserInfoDetails(userInfo);
-//        return new org.springframework.security.core.userdetails.User(
-//                userInfo.getUserName(),
-//                "",
-//                new ArrayList<>()
-
-
-//        );
     }
 }

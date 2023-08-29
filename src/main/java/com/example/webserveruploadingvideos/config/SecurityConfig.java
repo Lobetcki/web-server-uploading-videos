@@ -17,40 +17,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 public class SecurityConfig {
 
-//     // Создаем бин для хранения пользователей в памяти приложения
-//    @Bean
-//    public UserDetailsManager userDetailsManager(PasswordEncoder passwordEncoder) {
-//
-//        // Создаем пользователя Ivan с ролью USER
-//        UserDetails ivan = User.withUsername("Ivan")
-//                .password(passwordEncoder.encode(" "))
-//                .roles("USER")
-//                .build();
-//
-//        // Создаем пользователя Vladimir с ролью USER
-//        UserDetails vladimir = User.withUsername("Vladimir")
-//                .password(passwordEncoder.encode(" "))
-//                .roles("USER")
-//                .build();
-//
-//        // Создаем пользователя admin с ролью ADMIN
-//        UserDetails admin = User.withUsername("admin")
-//                .password(passwordEncoder.encode(" "))
-//                .roles("USER","ADMIN")
-//                .build();
-//
-//        // Возвращаем новый сервис управления пользователями InMemoryUserDetailsManager
-//        // с добавленными пользователями (Ivan, Vladimir, admin)
-//        return new InMemoryUserDetailsManager(ivan, vladimir, admin);
-//    }
-
-
-
-
-
-
-
-//    @Qualifier("securityUserDetailsService")
     @Autowired
     private UserDetailsService userDetailsService;
 

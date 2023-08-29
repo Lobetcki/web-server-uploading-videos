@@ -11,6 +11,6 @@ create table Video
 
     user_name     varchar(255) NOT NULL,
     primary key (video_hash),
-    foreign key (user_name) references UserInfo(user_name)
+    foreign key (user_name) references user_info(user_name)
 );
 
