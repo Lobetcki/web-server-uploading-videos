@@ -61,7 +61,7 @@ public class VideoService {
         // Генерируем хэш файла
         String videoHash = generateVideoHash(file);
 
-        UserInfo user = userRepository.findById(name)
+        UserInfo user = userRepository.findById(authentication.getName())
                 .orElseThrow(ItNotFoundException::new);
 
         // проверяем количество загружаемых видео
