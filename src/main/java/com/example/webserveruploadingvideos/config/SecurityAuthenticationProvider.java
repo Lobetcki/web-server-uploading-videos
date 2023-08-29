@@ -1,6 +1,8 @@
 package com.example.webserveruploadingvideos.config;
 
+import com.example.webserveruploadingvideos.repozitory.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -12,8 +14,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class SecurityAuthenticationProvider implements AuthenticationProvider {
 
+    @Qualifier("securityUserDetailsService")
     @Autowired
     private UserDetailsService userDetailsService;
+
+    private UserRepository userRepository;
+
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         String username = authentication.getName();
@@ -21,7 +27,7 @@ public class SecurityAuthenticationProvider implements AuthenticationProvider {
 
         return new UsernamePasswordAuthenticationToken(
                 userDetails.getUsername(),
-                "1",
+                "",
                 userDetails.getAuthorities()
         );
     }

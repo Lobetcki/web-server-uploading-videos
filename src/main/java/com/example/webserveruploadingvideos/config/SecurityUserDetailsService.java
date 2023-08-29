@@ -20,12 +20,15 @@ public class SecurityUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        UserInfo user = userRepository.findById(username).orElseThrow(ItNotFoundException::new);
+        UserInfo userInfo = userRepository.findById(username).orElseThrow(ItNotFoundException::new);
+
 
         return new org.springframework.security.core.userdetails.User(
-                user.getUserName(),
-                "1",
+                userInfo.getUserName(),
+                "",
                 new ArrayList<>()
+
+
         );
     }
 }

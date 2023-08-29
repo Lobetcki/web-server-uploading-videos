@@ -29,7 +29,6 @@ public class UserController {
         this.videoService = uploadVideoService;
     }
 
-    // Авторизация
     @PostMapping("/authority")
     public ResponseEntity<String> authority(@RequestBody String userName) {
         return ResponseEntity.ok(videoService.authority(userName));
