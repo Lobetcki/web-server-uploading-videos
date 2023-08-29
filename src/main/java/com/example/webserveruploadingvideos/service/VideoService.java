@@ -79,7 +79,6 @@ public class VideoService {
             Video video = new Video();
             video.setVideoHash(videoHash);
             video.setNameVideo(file.getOriginalFilename());
-            video.getUser().add(user);
             user.getDownloadableVideo().add(video);
 
             if (!(videoRepository.existsById(videoHash))) { // если видео нет в БД
@@ -87,8 +86,8 @@ public class VideoService {
                 video.setStartTime(startTime);
                 video.setStatus(StatusVideo.VIDEO_BEING_UPLOADED);
 
-                userRepository.save(user);
                 videoRepository.save(video);
+                userRepository.save(user);
 
                 try {
                     // Сохраняем файл на диск
@@ -104,8 +103,8 @@ public class VideoService {
                     return "Ошибка при сохранении файла: " + e.getMessage();
                 }
             } else {
-                userRepository.save(user);
                 videoRepository.save(video);
+                userRepository.save(user);
                 return "Видео успешно загружено!";
             }
         } else {
@@ -158,7 +157,7 @@ public class VideoService {
 
     // Страница со списком всех видео
     public List<VideoDTO> getAllVideoUsers(Authentication authentication) {
-        UserInfo user = userRepository.findById(authentication.getName()).orElseThrow(ItNotFoundException::new);
+        UserInfo user = userRepository.findByUserNameWithVideos(authentication.getName()).orElseThrow(ItNotFoundException::new);
         return user.getDownloadableVideo()
                 .stream()
                 .map(VideoDTO::from)

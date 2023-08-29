@@ -19,7 +19,7 @@ public class AdminController {
         this.videoService = videoService;
     }
 
-    @GetMapping("/admin/dashboard")
+    @GetMapping("/dashboard")
     public List<VideoAdminDTO> adminDashboard(Authentication authentication) {
         List<VideoAdminDTO> currentUploads = videoService.sendUploadToAdmin(authentication);
 

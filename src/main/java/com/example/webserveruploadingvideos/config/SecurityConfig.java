@@ -3,7 +3,6 @@ package com.example.webserveruploadingvideos.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -17,6 +16,39 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
+
+//     // Создаем бин для хранения пользователей в памяти приложения
+//    @Bean
+//    public UserDetailsManager userDetailsManager(PasswordEncoder passwordEncoder) {
+//
+//        // Создаем пользователя Ivan с ролью USER
+//        UserDetails ivan = User.withUsername("Ivan")
+//                .password(passwordEncoder.encode(" "))
+//                .roles("USER")
+//                .build();
+//
+//        // Создаем пользователя Vladimir с ролью USER
+//        UserDetails vladimir = User.withUsername("Vladimir")
+//                .password(passwordEncoder.encode(" "))
+//                .roles("USER")
+//                .build();
+//
+//        // Создаем пользователя admin с ролью ADMIN
+//        UserDetails admin = User.withUsername("admin")
+//                .password(passwordEncoder.encode(" "))
+//                .roles("USER","ADMIN")
+//                .build();
+//
+//        // Возвращаем новый сервис управления пользователями InMemoryUserDetailsManager
+//        // с добавленными пользователями (Ivan, Vladimir, admin)
+//        return new InMemoryUserDetailsManager(ivan, vladimir, admin);
+//    }
+
+
+
+
+
+
 
 //    @Qualifier("securityUserDetailsService")
     @Autowired
@@ -52,8 +84,8 @@ public class SecurityConfig {
         try {
             registry.requestMatchers(new AntPathRequestMatcher("/admin/**"))
                     .hasAnyRole("ADMIN")
-                    .requestMatchers(HttpMethod.POST, "/**")
-                    .hasAnyRole("ADMIN")
+//                    .requestMatchers(HttpMethod.POST, "/**")
+//                    .hasAnyRole("ADMIN")
                     .requestMatchers(new AntPathRequestMatcher("/user/**"))
                     .hasAnyRole("USER")
                     .and()
