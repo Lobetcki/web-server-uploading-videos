@@ -27,6 +27,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,7 +61,7 @@ public class VideoService {
         // Генерируем хэш файла
         String videoHash = generateVideoHash(file);
 
-        UserInfo user = userRepository.findById(authentication.getName())
+        UserInfo user = userRepository.findById(name)
                 .orElseThrow(ItNotFoundException::new);
 
         // проверяем количество загружаемых видео
@@ -72,21 +73,31 @@ public class VideoService {
             return "Вы уже загружаете максимальное количество видео.";
         }
 
+
+
         if (isVideoFile(file)) { // проверка я вляется файлом или нет
-            // старт загрузки
-            LocalDateTime startTime = LocalDateTime.now();
 
-            Video video = new Video();
-            video.setVideoHash(videoHash);
-            video.setNameVideo(file.getOriginalFilename());
-            user.getDownloadableVideo().add(video);
+            Video video = videoRepository.findById(videoHash).orElse(null);
 
-            if (!(videoRepository.existsById(videoHash))) { // если видео нет в БД
 
-                video.setStartTime(startTime);
-                video.setStatus(StatusVideo.VIDEO_BEING_UPLOADED);
+            if (video == null) { // если видео нет в БД
+                // старт загрузки
+                LocalDateTime startTime = LocalDateTime.now();
+                Video videoNew = new Video();
+                videoNew.setVideoHash(videoHash);
+                videoNew.setNameVideo(file.getOriginalFilename());
+//            List<UserInfo> userInfoList = video.getUser();
+//                    userInfoList.add(user);
+//            video.setUser(userInfoList);
+                videoNew.setStartTime(startTime);
+                videoNew.setStatus(StatusVideo.VIDEO_BEING_UPLOADED);
 
-                videoRepository.save(video);
+                List<UserInfo> userInfoList = new ArrayList<>();
+                userInfoList.add(user);
+
+                videoNew.setUser(userInfoList);
+                user.getDownloadableVideo().add(videoNew);
+                videoRepository.save(videoNew);
                 userRepository.save(user);
 
                 try {
@@ -103,6 +114,11 @@ public class VideoService {
                     return "Ошибка при сохранении файла: " + e.getMessage();
                 }
             } else {
+                if (user.getDownloadableVideo().contains(video)) {
+                    return "Вы уже загрузили рвнее видео " + video.getNameVideo();
+                }
+                user.getDownloadableVideo().add(video);
+                video.getUser().add(user);
                 videoRepository.save(video);
                 userRepository.save(user);
                 return "Видео успешно загружено!";
@@ -185,7 +201,6 @@ public class VideoService {
                 .orElseThrow(ItNotFoundException::new);
 
         if (user.getRole().equals(Role.ADMIN)) {
-
             List<Video> currentUploads = videoRepository.findAllByStatus(StatusVideo.VIDEO_BEING_UPLOADED);
 
             return currentUploads.stream()
