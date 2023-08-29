@@ -36,7 +36,10 @@ public class UserController {
     }
 
     // Загрузка видео
-    @PostMapping("/upload")
+    @RequestMapping(
+            path = "/upload",
+            method = RequestMethod.POST,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadVideo(@RequestParam("file") MultipartFile file,
 
                                               Authentication authentication) {
