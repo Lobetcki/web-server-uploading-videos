@@ -145,6 +145,7 @@ public class VideoService {
     }
 
     // Конец загрузки
+    @Transactional
     public void endUploadVideo(String videoHash,
                                LocalDateTime endTime) {
         Video video = videoRepository.findById(videoHash).orElse(null);
@@ -165,6 +166,7 @@ public class VideoService {
     }
 
     // информация о видео
+    @Transactional
     public Video downloadVideo(String videoHash, Authentication authentication) {
         UserInfo user = userRepository.findById(authentication.getName())
                 .orElseThrow(ItNotFoundException::new);
@@ -176,6 +178,7 @@ public class VideoService {
     }
 
     // Метод для отправки данных о текущих загрузках на клиентскую сторону
+    @Transactional
     @Scheduled(fixedDelay = 1000) // Регулярное выполнение каждую секунду
     public List<VideoAdminDTO> sendUploadToAdmin(Authentication authentication) {
 
