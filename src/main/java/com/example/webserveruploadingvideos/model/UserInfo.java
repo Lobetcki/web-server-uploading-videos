@@ -13,11 +13,12 @@ import java.util.List;
 public class UserInfo {
 
     @Id
+    @Column(nullable = false, unique = true)
     private String userName;
 
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private List<Video> downloadableVideo;
 }

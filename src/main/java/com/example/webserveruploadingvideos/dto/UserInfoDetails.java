@@ -1,5 +1,6 @@
 package com.example.webserveruploadingvideos.dto;
 
+import com.example.webserveruploadingvideos.enums.Role;
 import com.example.webserveruploadingvideos.model.UserInfo;
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
@@ -12,28 +13,32 @@ import java.util.List;
 @Data
 public class UserInfoDetails implements UserDetails {
 
-    UserInfo userInfo;
-
-    public UserInfoDetails(UserInfo userInfo) {
-        this.userInfo = userInfo;
-    }
+    private String userName;
+    private Role role;
 
     private List<GrantedAuthority> authorities;
 
+    public static UserInfoDetails fromUserInfoDetails(UserInfo userInfo) {
+        UserInfoDetails userInfoDetails = new UserInfoDetails();
+        userInfoDetails.setUserName(userInfo.getUserName());
+        userInfoDetails.setRole(userInfo.getRole());
+        return userInfoDetails;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(userInfo.getRole().name()));
+        return List.of(new SimpleGrantedAuthority(role.name()));
 //        return null;
     }
 
     @Override
     public String getPassword() {
-        return " ";
+        return null;
     }
 
     @Override
     public String getUsername() {
-        return userInfo.getUserName();
+        return userName;
     }
 
 

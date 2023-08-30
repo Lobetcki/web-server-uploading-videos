@@ -14,6 +14,7 @@ import java.util.List;
 public class Video {
 
     @Id
+    @Column(nullable = false, unique = true)
     private String videoHash;
     private String nameVideo;
     private LocalDateTime startTime;

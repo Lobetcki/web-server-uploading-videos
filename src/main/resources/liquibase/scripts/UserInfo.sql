@@ -3,7 +3,7 @@
 -- changeset anton:1
 create table user_info
 (
-    user_name     varchar(255) NOT NULL,
+    user_name     varchar(255) NOT NULL UNIQUE,
     role          varchar(250),
 
     video_hash    varchar(255),

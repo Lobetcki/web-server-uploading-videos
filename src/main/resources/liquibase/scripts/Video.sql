@@ -3,7 +3,7 @@
 -- changeset anton:2
 create table Video
 (
-    video_hash     varchar(255) NOT NULL,
+    video_hash     varchar(255) NOT NULL UNIQUE,
     name_video     varchar(255) NOT NULL,
     start_time     date,
     endTime        date,

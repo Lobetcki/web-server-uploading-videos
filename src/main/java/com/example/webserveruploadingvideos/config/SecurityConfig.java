@@ -48,10 +48,9 @@ public class SecurityConfig {
 
     private void customizeRequest(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry registry) {
         try {
-            registry.requestMatchers(new AntPathRequestMatcher("/admin/**"))
+            registry.requestMatchers(
+                    new AntPathRequestMatcher("/admin/**"))
                     .hasAnyRole("ADMIN")
-//                    .requestMatchers(HttpMethod.POST, "/**")
-//                    .hasAnyRole("ADMIN")
                     .requestMatchers(new AntPathRequestMatcher("/user/**"))
                     .hasAnyRole("USER")
                     .and()

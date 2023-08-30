@@ -12,9 +12,7 @@ import com.example.webserveruploadingvideos.repozitory.VideoRepository;
 import jakarta.transaction.Transactional;
 import jakarta.xml.bind.DatatypeConverter;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,23 +32,13 @@ import java.util.stream.Collectors;
 @Service
 public class VideoService {
 
+
     private final VideoRepository videoRepository;
     private final UserRepository userRepository;
 
     public VideoService(VideoRepository videoRepository, UserRepository userRepository) {
         this.videoRepository = videoRepository;
         this.userRepository = userRepository;
-    }
-
-    // авторизация
-    public String authority(String userName) {
-
-        userRepository.existsById(userName);
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(userName, null);
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        return userName;
     }
 
     // Созраняем видео на жесткий диск и сохраняем в базу данных информации о видео
@@ -207,4 +195,6 @@ public class VideoService {
             throw new ItNotFoundException();
         }
     }
+
+
 }
