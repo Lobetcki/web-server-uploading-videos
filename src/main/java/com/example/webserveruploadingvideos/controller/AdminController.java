@@ -2,7 +2,6 @@ package com.example.webserveruploadingvideos.controller;
 
 import com.example.webserveruploadingvideos.dto.VideoAdminDTO;
 import com.example.webserveruploadingvideos.service.VideoService;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,10 +19,9 @@ public class AdminController {
     }
 
     @GetMapping("/dashboard")
-    public List<VideoAdminDTO> adminDashboard(Authentication authentication) {
-        List<VideoAdminDTO> currentUploads = videoService.sendUploadToAdmin(authentication);
+    public List<VideoAdminDTO> adminDashboard(String username) {
 
-        return currentUploads;
+        return videoService.sendUploadToAdmin(username);
     }
 
 }

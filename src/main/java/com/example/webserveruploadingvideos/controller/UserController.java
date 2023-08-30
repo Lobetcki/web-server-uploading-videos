@@ -4,12 +4,12 @@ import com.example.webserveruploadingvideos.dto.VideoDTO;
 import com.example.webserveruploadingvideos.exception.InvalidParametersExeption;
 import com.example.webserveruploadingvideos.model.Video;
 import com.example.webserveruploadingvideos.service.VideoService;
+import jakarta.validation.constraints.NotNull;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,16 +29,23 @@ public class UserController {
         this.videoService = uploadVideoService;
     }
 
+    @PostMapping("/save")
+    public void saveUser(@RequestParam String username) {
+        if (!videoService.saveUser(username)) {
+            throw new InvalidParametersExeption();
+        }
+
+    }
+
     // Загрузка видео
     @RequestMapping(
             path = "/upload",
             method = RequestMethod.POST,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadVideo(@RequestParam("file") MultipartFile file,
-
-                                              Authentication authentication) {
+                                              @NotNull String username) {
         if (!file.isEmpty()) {
-            return ResponseEntity.ok(videoService.uploadVideo(file, authentication));
+            return ResponseEntity.ok(videoService.uploadVideo(file, username));
         } else {
             return ResponseEntity.badRequest().body("Файл для загрузки не выбран!");
         }
@@ -46,16 +53,16 @@ public class UserController {
 
     // Страница со списком всех видео
     @GetMapping("/all_videos")
-    public List<VideoDTO> getAllVideoUsers(Authentication authentication) {
-        return videoService.getAllVideoUsers(authentication);
+    public List<VideoDTO> getAllVideoUsers(@NotNull String username) {
+        return videoService.getAllVideoUsers(username);
     }
 
     // скачать видео
     @GetMapping("/download/{id}")
-    public ResponseEntity<Resource> downloadVideo(@PathVariable String videoHash,
-                                                  Authentication authentication) {
+    public ResponseEntity<Resource> downloadVideo(@NotNull String videoHash,
+                                                  @NotNull String username) {
 
-        Video video = videoService.downloadVideo(videoHash, authentication);
+        Video video = videoService.downloadVideo(videoHash, username);
 
         try {
         Path path = Paths.get("D:\\TestVideo\\" + videoHash);

@@ -16,8 +16,6 @@ public class UserInfo {
     @Column(nullable = false, unique = true)
     private String userName;
 
-    private String password = " ";
-
     @Enumerated(EnumType.STRING)
     private Role role;
 

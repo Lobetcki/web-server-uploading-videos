@@ -12,7 +12,6 @@ import com.example.webserveruploadingvideos.repozitory.VideoRepository;
 import jakarta.transaction.Transactional;
 import jakarta.xml.bind.DatatypeConverter;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,15 +40,29 @@ public class VideoService {
         this.userRepository = userRepository;
     }
 
+    public boolean saveUser(String username) {
+
+        UserInfo userFromDB = userRepository.findById(username).orElse(null);
+
+        if (userFromDB != null) {
+            return false;
+        }
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUserName(username);
+        userInfo.setRole(Role.USER);
+        userRepository.save(userInfo);
+        return true;
+    }
+
     // Созраняем видео на жесткий диск и сохраняем в базу данных информации о видео
     @Transactional
     public String uploadVideo(MultipartFile file,
-                               Authentication authentication
+                               String username
                                ) {
         // Генерируем хэш файла
         String videoHash = generateVideoHash(file);
 
-        UserInfo user = userRepository.findById(authentication.getName())
+        UserInfo user = userRepository.findById(username)
                 .orElseThrow(ItNotFoundException::new);
 
         // проверяем количество загружаемых видео
@@ -156,8 +169,8 @@ public class VideoService {
     }
 
     // Страница со списком всех видео
-    public List<VideoDTO> getAllVideoUsers(Authentication authentication) {
-        UserInfo user = userRepository.findByUserNameWithVideos(authentication.getName()).orElseThrow(ItNotFoundException::new);
+    public List<VideoDTO> getAllVideoUsers(String username) {
+        UserInfo user = userRepository.findByUserNameWithVideos(username).orElseThrow(ItNotFoundException::new);
         return user.getDownloadableVideo()
                 .stream()
                 .map(VideoDTO::from)
@@ -166,22 +179,21 @@ public class VideoService {
 
     // информация о видео
     @Transactional
-    public Video downloadVideo(String videoHash, Authentication authentication) {
-        UserInfo user = userRepository.findById(authentication.getName())
+    public Video downloadVideo(String videoHash, String username) {
+        UserInfo user = userRepository.findById(username)
                 .orElseThrow(ItNotFoundException::new);
 
-        Video video = user.getDownloadableVideo().stream()
+        return user.getDownloadableVideo().stream()
                 .filter(video1 -> video1.getVideoHash().equals(videoHash))
                 .findFirst().orElseThrow(ItNotFoundException::new);
-        return video;
     }
 
     // Метод для отправки данных о текущих загрузках на клиентскую сторону
     @Transactional
     @Scheduled(fixedDelay = 1000) // Регулярное выполнение каждую секунду
-    public List<VideoAdminDTO> sendUploadToAdmin(Authentication authentication) {
+    public List<VideoAdminDTO> sendUploadToAdmin(String username) {
 
-        UserInfo user = userRepository.findById(authentication.getName())
+        UserInfo user = userRepository.findById(username)
                 .orElseThrow(ItNotFoundException::new);
 
         if (user.getRole().equals(Role.ADMIN)) {
