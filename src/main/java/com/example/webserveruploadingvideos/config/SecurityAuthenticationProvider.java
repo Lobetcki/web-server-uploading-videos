@@ -24,7 +24,7 @@ public class SecurityAuthenticationProvider implements AuthenticationProvider {
 
         return new UsernamePasswordAuthenticationToken(
                 userDetails.getUsername(),
-                null,
+                " ",
                 userDetails.getAuthorities()
         );
     }
